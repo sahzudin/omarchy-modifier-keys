@@ -209,10 +209,7 @@ Item {
     onTabRequested: function(direction) { root.tabRequested(direction) }
     onMoveRequested: function(dx, dy) { root.moveCursor(dx, dy) }
     onActivateRequested: root.activate()
-    onTextKey: function(t) {
-      if (t === "r") root.refresh()
-      else if (t === "d") root.restoreDefaults()
-    }
+    onTextKey: function(t) { if (t === "r") root.refresh() }
 
     ScrollView {
       id: scrollArea
@@ -346,7 +343,7 @@ Item {
         }
 
         Text {
-          text: "j/k rows · h/l targets · Enter apply · r refresh · d defaults · Esc close"
+          text: "j/k rows · h/l targets · Enter apply · r refresh · Esc close"
           color: Qt.darker(root.foreground, 1.7)
           font.family: root.fontFamily
           font.pixelSize: Style.font.bodySmall
