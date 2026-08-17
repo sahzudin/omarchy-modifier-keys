@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.sahzudin.modifier-keys",
+  "name": "Modifier Keys",
+  "version": "1.0.0",
+  "author": "Sahzudin",
+  "license": "MIT",
+  "description": "macOS-style Modifier Keys remapping for Caps Lock, Control, Alt/Option, and Super/Command via XKB options.",
+  "kinds": [
+    "panel",
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "panel": "Panel.qml",
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Modifier Keys",
+    "description": "Remap Caps Lock, Control, Alt, and Super modifier keys.",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}
