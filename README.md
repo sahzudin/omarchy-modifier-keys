@@ -13,26 +13,32 @@ Alt/Win swap (`altwin:swap_lalt_lwin`): the panel writes `kb_options` into
 
 ## Install
 
+Both steps are required — `omarchy plugin add` cannot do the second one.
+
 ```sh
 omarchy plugin add https://github.com/sahzudin/omarchy-modifier-keys.git --enable
+~/.config/omarchy/plugins/io.github.sahzudin.modifier-keys/install.sh
 ```
 
 The plugin ships two entry points:
 
-- **Panel** — a standalone settings panel, summoned from the Omarchy menu.
-- **Bar widget** — an optional keyboard icon (`  `) in the bar.
+- **Panel** — a settings panel, summoned from the Omarchy menu.
+- **Bar widget** — a keyboard icon (`  `) in the bar.
 
-### Add the menu entry
+`install.sh` finishes what the plugin cannot do from its own manifest:
 
-The Omarchy menu reads its extension rows from a single user file, so run the
-bundled installer to merge in the **Setup → Keyboard → Modifier Keys** entry:
+- adds the **Setup → Keyboard → Modifier Keys** row to the Omarchy menu (the
+  menu reads its extension rows from one user file,
+  `~/.config/omarchy/extensions/omarchy-menu.jsonc`, which no plugin can
+  contribute to — the original is kept as `omarchy-menu.jsonc.bak`);
+- makes sure `shell.json` actually places the plugin in the bar, and repairs
+  the stale-entry case described under [Troubleshooting](#troubleshooting).
 
-```sh
-~/.config/omarchy/plugins/io.github.sahzudin.modifier-keys/install.sh
-omarchy-shell shell rescanPlugins && omarchy menu refresh
-```
+It is safe to re-run; every step is a no-op once applied. Pass a section to
+place the icon elsewhere: `install.sh center`.
 
-Or add these rows to `~/.config/omarchy/extensions/omarchy-menu.jsonc` by hand:
+If you would rather add the menu rows by hand, put these in
+`~/.config/omarchy/extensions/omarchy-menu.jsonc`:
 
 ```jsonc
 "setup.keyboard": { "icon": "", "label": "Keyboard" },
@@ -43,17 +49,50 @@ Or add these rows to `~/.config/omarchy/extensions/omarchy-menu.jsonc` by hand:
 },
 ```
 
-### Bar widget (optional)
+then apply them with `omarchy-shell shell rescanPlugins && omarchy menu refresh`.
 
-Place it in the bar, or enable it anywhere with:
+### Moving or removing the bar icon
 
 ```sh
-omarchy plugin enable io.github.sahzudin.modifier-keys
-omarchy bar move io.github.sahzudin.modifier-keys --section right
+omarchy bar move io.github.sahzudin.modifier-keys --section center
+omarchy plugin disable io.github.sahzudin.modifier-keys   # removes the icon
 ```
 
-Remove it from the bar with `omarchy bar move io.github.sahzudin.modifier-keys --reset`
-or disable the plugin.
+Note that Omarchy has no "keep the plugin, drop just the icon" verb: because
+the plugin declares the `bar-widget` kind, its bar entry is the same
+`shell.json` reference that keeps the panel loadable, so disabling it turns off
+the menu entry's panel too. Leave the icon in place if you want the menu row to
+keep working.
+
+## Troubleshooting
+
+**No "Modifier Keys" row in the Omarchy menu.** `omarchy plugin add` does not
+add menu rows — run `install.sh` (above), then `omarchy menu refresh`.
+
+**No icon in the bar, even though the plugin is installed.** Check what
+`shell.json` says:
+
+```sh
+omarchy plugin list | grep modifier-keys
+```
+
+If it reports `disabled` while `omarchy plugin enable` claims success and
+changes nothing, an earlier install left a bare `plugins[]` entry for the id.
+Omarchy's `enable` only inserts a bar entry when `shell.json` mentions the id
+*nowhere*, so the stale entry makes it a silent no-op, and `omarchy bar move`
+fails with `could not find widget` because the widget is not in the bar yet.
+Clear it first:
+
+```sh
+omarchy plugin disable io.github.sahzudin.modifier-keys
+omarchy plugin enable io.github.sahzudin.modifier-keys --section right
+```
+
+`install.sh` detects and repairs this automatically.
+
+**Edits to `shell.json` get reverted.** The running shell writes that file from
+its own in-memory copy, so hand edits made while it is running are overwritten.
+Use the `omarchy plugin` / `omarchy bar` commands instead.
 
 ## Usage
 
