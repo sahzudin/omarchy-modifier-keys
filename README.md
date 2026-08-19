@@ -132,8 +132,14 @@ scripts/apply.py reset    # drop all managed tokens and reload
 ## Remove
 
 ```sh
+~/.config/omarchy/plugins/io.github.sahzudin.modifier-keys/uninstall.sh
 omarchy plugin remove io.github.sahzudin.modifier-keys
 ```
+
+Run the uninstaller first: it removes the rows that `install.sh` added to the
+shared Omarchy menu. It leaves user-edited rows and a shared Keyboard parent
+that still has other children intact. Removing the plugin alone cannot perform
+this cleanup because its directory (including the uninstaller) is deleted.
 
 ## License
 
